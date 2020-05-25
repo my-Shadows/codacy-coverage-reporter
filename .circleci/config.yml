@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@dev:4.2.0-sbtwindowssupport.3.c1f9b27
+  codacy: codacy/base@dev:4.2.0-sbtwindowssupport.4.1056d28
 
 references:
   circleci_job: &circleci_job
