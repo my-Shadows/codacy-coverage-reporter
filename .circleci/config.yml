@@ -236,7 +236,7 @@ workflows:
             export TARGET_GRAAL="./target/graalvm-$GRAAL_VERSION.tar.gz"
             mkdir -p target
             if [[ ! -e $TARGET_GRAAL ]]; then
-              curl -L "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-$GRAAL_VERSION/graalvm-ce-java8-darwin-amd64-$GRAAL_VERSION.tar.gz" -o "$TARGET_GRAAL"
+              curl -L "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-$GRAAL_VERSION/graalvm-ce-java11-darwin-amd64-$GRAAL_VERSION.tar.gz" -o "$TARGET_GRAAL"
             fi
             sudo tar -xf $TARGET_GRAAL -C /Library/Java/JavaVirtualMachines
             /usr/libexec/java_home -V
@@ -256,17 +256,17 @@ workflows:
             Set-Item -Path Env:GRAAL_VERSION -Value "20.0.0"
             Set-Item -Path Env:TARGET_GRAAL -Value ("./target/graalvm-" + $Env:GRAAL_VERSION + ".tar.gz")
             mkdir -p target
-            curl -L "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-$GRAAL_VERSION/graalvm-ce-java8-windows-amd64-$GRAAL_VERSION.tar.gz" -o "$TARGET_GRAAL"
+            curl.exe -L "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-$Env:GRAAL_VERSION/graalvm-ce-java11-windows-amd64-$Env:GRAAL_VERSION.zip" -o "$Env:TARGET_GRAAL"
             
             mkdir -p graalvm/
-            sudo tar -xf $TARGET_GRAAL -C graalvm/
+            unzip $Env:TARGET_GRAAL -d graalvm/
             
-            Set-Item -Path Env:Path -Value ($Env:Path + ";graalvm/graalvm-ce-java8-" + $Env:GRAAL_VERSION + "/Contents/Home/bin")
+            Set-Item -Path Env:Path -Value ($Env:Path + ";graalvm/graalvm-ce-java11-$Env:GRAAL_VERSION/bin")
 
-            gu install native-image
-            sbt "set graalVMNativeImageGraalVersion := None; set graalVMNativeImageOptions --= Seq(\"--static\", \"-H:UseMuslC=/opt/graalvm/stage/resources/bundle/\"); graalvm-native-image:packageBin"
+            ./graalvm/graalvm-ce-java11-20.0.0/bin/gu.cmd install native-image
+            sbt "set graalVMNativeImageGraalVersion := None; set graalVMNativeImageOptions -= '--static'; set graalVMNativeImageOptions -= '-H:UseMuslC=/opt/graalvm/stage/resources/bundle/'; graalvm-native-image:packageBin"
             mkdir -p  ~/workdir/tmp-artifacts
-            mv $HOME/workdir/target/graalvm-native-image/codacy-coverage-reporter $HOME/workdir/tmp-artifacts/codacy-coverage-reporter-win
+            mv.exe $HOME/workdir/target/graalvm-native-image/codacy-coverage-reporter $HOME/workdir/tmp-artifacts/codacy-coverage-reporter-win
           persist_to_workspace: true
           persist_to_workspace_path: "tmp-artifacts/codacy-coverage-reporter-win"
           requires:
