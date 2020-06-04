@@ -267,7 +267,9 @@ workflows:
             java -version
 
             gu.cmd install native-image
-            sbt "set graalVMNativeImageGraalVersion := None; set graalVMNativeImageOptions -= '--static'; set graalVMNativeImageOptions -= '-H:UseMuslC=/opt/graalvm/stage/resources/bundle/'; graalvm-native-image:packageBin"
+            # Seems like the first time sbt always fails ...
+            (sbt compile) -or (exit 0)
+            sbt winGraalBuild
             mkdir -p  ~/workdir/tmp-artifacts
             mv.exe $HOME/workdir/target/graalvm-native-image/codacy-coverage-reporter $HOME/workdir/tmp-artifacts/codacy-coverage-reporter-win
           persist_to_workspace: true
