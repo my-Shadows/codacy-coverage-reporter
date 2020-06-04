@@ -90,6 +90,7 @@ getMuslBundle := {
 
 GraalVMNativeImage / packageBin := (GraalVMNativeImage / packageBin).dependsOn(getMuslBundle).value
 
-addCommandAlias("winGraalBuild",
+addCommandAlias(
+  "winGraalBuild",
   """set graalVMNativeImageGraalVersion := None; set graalVMNativeImageOptions -= "--static"; set graalVMNativeImageOptions -= "-H:UseMuslC=/opt/graalvm/stage/resources/bundle/"; graalvm-native-image:packageBin"""
 )
