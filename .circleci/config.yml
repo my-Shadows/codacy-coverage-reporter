@@ -253,24 +253,22 @@ workflows:
           name: create_artifacts_for_win
           cmd: |
             # TODO GraalVM version should be in a single place
-            export GRAAL_VERSION=20.0.0
-            export TARGET_GRAAL="./target/graalvm-$GRAAL_VERSION.tar.gz"
+            Set-Item -Path Env:GRAAL_VERSION -Value "20.0.0"
+            Set-Item -Path Env:TARGET_GRAAL -Value ("./target/graalvm-" + $Env:GRAAL_VERSION + ".tar.gz")
             mkdir -p target
-            if [[ ! -e $TARGET_GRAAL ]]; then
-              curl -L "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-$GRAAL_VERSION/graalvm-ce-java8-windows-amd64-$GRAAL_VERSION.tar.gz" -o "$TARGET_GRAAL"
-            fi
-
-            echo "from here, at some point"
+            curl -L "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-$GRAAL_VERSION/graalvm-ce-java8-windows-amd64-$GRAAL_VERSION.tar.gz" -o "$TARGET_GRAAL"
             
-            sudo tar -xf $TARGET_GRAAL -C /Library/Java/JavaVirtualMachines
-            /usr/libexec/java_home -V
-            export PATH="$PATH:/Library/Java/JavaVirtualMachines/graalvm-ce-java8-$GRAAL_VERSION/Contents/Home/bin"
-            sudo gu install native-image
+            mkdir -p graalvm/
+            sudo tar -xf $TARGET_GRAAL -C graalvm/
+            
+            Set-Item -Path Env:Path -Value ($Env:Path + ";graalvm/graalvm-ce-java8-" + $Env:GRAAL_VERSION + "/Contents/Home/bin")
+
+            gu install native-image
             sbt "set graalVMNativeImageGraalVersion := None; set graalVMNativeImageOptions --= Seq(\"--static\", \"-H:UseMuslC=/opt/graalvm/stage/resources/bundle/\"); graalvm-native-image:packageBin"
             mkdir -p  ~/workdir/tmp-artifacts
-            mv $HOME/workdir/target/graalvm-native-image/codacy-coverage-reporter $HOME/workdir/tmp-artifacts/codacy-coverage-reporter-darwin
+            mv $HOME/workdir/target/graalvm-native-image/codacy-coverage-reporter $HOME/workdir/tmp-artifacts/codacy-coverage-reporter-win
           persist_to_workspace: true
-          persist_to_workspace_path: "tmp-artifacts/codacy-coverage-reporter-darwin"
+          persist_to_workspace_path: "tmp-artifacts/codacy-coverage-reporter-win"
           requires:
             - test_and_coverage
       - package_artifacts:
