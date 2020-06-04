@@ -261,9 +261,10 @@ workflows:
             mkdir -p graalvm/
             unzip $Env:TARGET_GRAAL -d graalvm/
             
-            Set-Item -Path Env:Path -Value ($Env:Path + ";graalvm/graalvm-ce-java11-$Env:GRAAL_VERSION/bin")
+            Set-Item -Path Env:Path -Value ("$PWD\graalvm\graalvm-ce-java11-${Env:GRAAL_VERSION}\bin;" + $Env:Path)
+            Set-Item -Path Env:JavaHome -Value "$PWD\graalvm\graalvm-ce-java11-${Env:GRAAL_VERSION}"
 
-            ./graalvm/graalvm-ce-java11-20.0.0/bin/gu.cmd install native-image
+            gu.cmd install native-image
             sbt "set graalVMNativeImageGraalVersion := None; set graalVMNativeImageOptions -= '--static'; set graalVMNativeImageOptions -= '-H:UseMuslC=/opt/graalvm/stage/resources/bundle/'; graalvm-native-image:packageBin"
             mkdir -p  ~/workdir/tmp-artifacts
             mv.exe $HOME/workdir/target/graalvm-native-image/codacy-coverage-reporter $HOME/workdir/tmp-artifacts/codacy-coverage-reporter-win
