@@ -92,5 +92,5 @@ GraalVMNativeImage / packageBin := (GraalVMNativeImage / packageBin).dependsOn(g
 
 addCommandAlias(
   "winGraalBuild",
-  """set graalVMNativeImageCommand := "C:\Users\circleci\workdir\graalvm\graalvm-ce-java11-20.0.0\bin\native-image.cmd"; set graalVMNativeImageGraalVersion := None; set graalVMNativeImageOptions -= "--static"; set graalVMNativeImageOptions -= "-H:UseMuslC=/opt/graalvm/stage/resources/bundle/"; graalvm-native-image:packageBin"""
+  """set graalVMNativeImageCommand := "C:\\Users\\circleci\\workdir\\graalvm\\graalvm-ce-java11-20.0.0\\bin\\native-image.cmd"; set graalVMNativeImageGraalVersion := None; set graalVMNativeImageOptions -= "--static"; set graalVMNativeImageOptions -= "-H:UseMuslC=/opt/graalvm/stage/resources/bundle/"; graalvm-native-image:packageBin"""
 )
