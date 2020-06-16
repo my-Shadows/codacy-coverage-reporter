@@ -259,7 +259,7 @@ workflows:
             # pre-requisites for Windows: https://www.graalvm.org/docs/reference-manual/native-image/
             # npm install --debug --global windows-build-tools
 
-            choco install visualstudio2019community
+            choco install visualstudio2019community --package-parameters "--allWorkloads --includeRecommended --includeOptional --passive"
 
             # TODO GraalVM version should be in a single place
             Set-Item -Path Env:GRAAL_VERSION -Value "20.0.0"
