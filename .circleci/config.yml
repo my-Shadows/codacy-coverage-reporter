@@ -254,6 +254,7 @@ workflows:
           cmd: |
             nvm install 8.17.0
             nvm use 8.17.0
+            scoop install python
             # install https://github.com/felixrieseberg/windows-build-tools
             # pre-requisites for Windows: https://www.graalvm.org/docs/reference-manual/native-image/
             npm install --debug --global windows-build-tools
