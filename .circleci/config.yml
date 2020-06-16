@@ -252,9 +252,11 @@ workflows:
       - codacy/sbt_win:
           name: create_artifacts_for_win
           cmd: |
+            nvm install 8.17.0
+            nvm use 8.17.0
             # install https://github.com/felixrieseberg/windows-build-tools
             # pre-requisites for Windows: https://www.graalvm.org/docs/reference-manual/native-image/
-            sudo npm install --debug --global windows-build-tools
+            npm install --debug --global windows-build-tools
 
             # TODO GraalVM version should be in a single place
             Set-Item -Path Env:GRAAL_VERSION -Value "20.0.0"
