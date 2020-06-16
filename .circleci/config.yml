@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@dev:4.1.0-sbtwindowssupport.6.33b0aa2
+  codacy: codacy/base@dev:4.1.0-sbtwindowssupport.7.a6cc5c2
 
 references:
   circleci_job: &circleci_job
@@ -240,7 +240,7 @@ workflows:
             fi
             sudo tar -xf $TARGET_GRAAL -C /Library/Java/JavaVirtualMachines
             /usr/libexec/java_home -V
-            export PATH="$PATH:/Library/Java/JavaVirtualMachines/graalvm-ce-java8-$GRAAL_VERSION/Contents/Home/bin"
+            export PATH="$PATH:/Library/Java/JavaVirtualMachines/graalvm-ce-java11-$GRAAL_VERSION/Contents/Home/bin"
             sudo gu install native-image
             sbt "set graalVMNativeImageGraalVersion := None; set graalVMNativeImageOptions --= Seq(\"--static\", \"-H:UseMuslC=/opt/graalvm/stage/resources/bundle/\"); graalvm-native-image:packageBin"
             mkdir -p  ~/workdir/tmp-artifacts
@@ -254,7 +254,7 @@ workflows:
           cmd: |
             # install https://github.com/felixrieseberg/windows-build-tools
             # pre-requisites for Windows: https://www.graalvm.org/docs/reference-manual/native-image/
-            npm install --global windows-build-tools
+            sudo npm install --debug --global windows-build-tools
 
             # TODO GraalVM version should be in a single place
             Set-Item -Path Env:GRAAL_VERSION -Value "20.0.0"
