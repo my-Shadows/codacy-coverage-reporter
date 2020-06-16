@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@dev:4.2.0-sbtwindowssupport.9.f64a9b6
+  codacy: codacy/base@dev:4.1.0-sbtwindowssupport.6.33b0aa2
 
 references:
   circleci_job: &circleci_job
@@ -252,6 +252,10 @@ workflows:
       - codacy/sbt_win:
           name: create_artifacts_for_win
           cmd: |
+            # install https://github.com/felixrieseberg/windows-build-tools
+            # pre-requisites for Windows: https://www.graalvm.org/docs/reference-manual/native-image/
+            npm install --global windows-build-tools
+
             # TODO GraalVM version should be in a single place
             Set-Item -Path Env:GRAAL_VERSION -Value "20.0.0"
             Set-Item -Path Env:TARGET_GRAAL -Value ("./target/graalvm-" + $Env:GRAAL_VERSION + ".tar.gz")
