@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  codacy: codacy/base@dev:4.1.0-sbtwindowssupport.7.a6cc5c2
+  codacy: codacy/base@dev:4.1.0-sbtwindowssupport.8.570dcbf
 
 references:
   circleci_job: &circleci_job
@@ -96,6 +96,7 @@ jobs:
           mv ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/artifacts/
           upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-linux-$(cat .version) ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
           upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-darwin-$(cat .version) ~/workdir/tmp-artifacts/codacy-coverage-reporter-darwin
+          upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-win-$(cat .version).exe ~/workdir/tmp-artifacts/codacy-coverage-reporter-win.exe
       - persist_to_workspace:
           root: ~/workdir
           paths:
@@ -166,11 +167,11 @@ jobs:
           command: |
             echo "Start and provision the mockserver"
             nohup mockserver -logLevel INFO -serverPort 1080 &
-            gtimeout 60 bash -c 'while [[ "$(curl -X PUT -o /dev/null -w ''%{http_code}'' localhost:1080/mockserver/status)" != "200" ]]; do sleep 2; done' || false
+            cmd.exe /c timeout 60 bash -c 'while [[ "$(curl -X PUT -o /dev/null -w ''%{http_code}'' localhost:1080/mockserver/status)" != "200" ]]; do sleep 2; done' || false
             curl -X PUT -d "$(cat integration-tests/mock-server-config.json)" http://localhost:1080/mockserver/expectation
 
             echo "Run the test"
-            set +e
+            
             # the following line ensure that we are using the cached binary
             export CODACY_REPORTER_VERSION=inexistent
             export CODACY_PROJECT_TOKEN=$TEST_CODACY_PROJECT_TOKEN
@@ -178,7 +179,40 @@ jobs:
             export ERROR_CODE=$?
             if [ $ERROR_CODE -ne 0 ]; then echo "expected an error code 0 and got $ERROR_CODE instead"; exit 1; fi
             echo "test completed with the expected error code: 0"
-        
+
+  it_coverage_script_windows:
+    executor: codacy/win
+    working_directory: ~/workdir
+    steps:
+      - attach_workspace:
+          at: ~/workdir
+      - run:
+          name: prepare the environment
+          command: |
+            https://search.maven.org/remotecontent?filepath=org/mock-server/mockserver-netty/5.10.0/mockserver-netty-5.10.0-jar-with-dependencies.jar
+            Invoke-WebRequest -Uri "https://search.maven.org/remotecontent?filepath=org/mock-server/mockserver-netty/5.10.0/mockserver-netty-5.10.0-jar-with-dependencies.jar" -OutFile "mockserver.jar"
+            mkdir -p .codacy-coverage
+            cp $HOME/workdir/artifacts/codacy-coverage-reporter-win-$(cat $HOME/workdir/.version).exe .codacy-coverage/codacy-coverage-reporter
+      - run:
+          name: test on windows
+          command: |
+            echo "Start and provision the mockserver"
+            Start-Job { java -jar mockserver.jar -serverPort 1080 }
+
+            gtimeout 60 bash -c 'while [[ "$(curl -X PUT -o /dev/null -w ''%{http_code}'' localhost:1080/mockserver/status)" != "200" ]]; do sleep 2; done' || false
+            curl -X PUT -d "$(cat integration-tests/mock-server-config.json)" http://localhost:1080/mockserver/expectation
+
+            echo "Run the test"
+            set +e
+            # the following line ensure that we are using the cached binary
+            Set-Item -Path CODACY_REPORTER_VERSION -Value inexistent
+            Set-Item -Path CODACY_PROJECT_TOKEN -Value $TEST_CODACY_PROJECT_TOKEN
+
+            sh get.sh report --commit-uuid $TEST_COMMIT_UUID  -r $TEST_CODACY_REPORT_PATH --codacy-api-base-url http://localhost:1080
+            export ERROR_CODE=$?
+            if [ $ERROR_CODE -ne 0 ]; then echo "expected an error code 0 and got $ERROR_CODE instead"; exit 1; fi
+            echo "test completed with the expected error code: 0"
+
 workflows:
   version: 2
   compile_test_deploy:
@@ -252,24 +286,6 @@ workflows:
       - codacy/sbt_win:
           name: create_artifacts_for_win
           cmd: |
-            # nvm install 8.17.0
-            # nvm use 8.17.0
-            # scoop install python
-            # install https://github.com/felixrieseberg/windows-build-tools
-            # pre-requisites for Windows: https://www.graalvm.org/docs/reference-manual/native-image/
-            # npm install --debug --global windows-build-tools
-
-            # choco install --force visualstudio2019community --package-parameters "--allWorkloads --includeRecommended --includeOptional --passive"
-            # choco install -y vcredist2017
-            # choco install -y visualcpp-build-tools
-            # choco install -y vcredist-all
-            # choco install -y microsoft-visual-cpp-build-tools
-            # choco install -y vcbuildtools -ia "/Full"
-
-            # choco install -y visualstudio2017buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools"
-
-            # choco install -y windows-sdk-7.1
-
             # thanks to: https://msitko.pl/blog/2020/03/05/native-image-on-windows.html
             choco install visualstudio2017-workload-vctools
 
@@ -281,8 +297,6 @@ workflows:
                 Set-Content "env:\$($matches[1])" $matches[2]
               }
             }
-
-            # STATIC might work for windows ...
 
             # TODO GraalVM version should be in a single place
             Set-Item -Path Env:GRAAL_VERSION -Value "20.0.0"
