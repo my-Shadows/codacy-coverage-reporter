@@ -92,6 +92,8 @@ jobs:
       - attach_workspace:
           at: ~/workdir
       - run: |
+          ls -al ~/workdir/tmp-artifacts
+          
           mkdir -p ~/workdir/artifacts/
           mv ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/artifacts/
           upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-linux-$(cat .version) ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
