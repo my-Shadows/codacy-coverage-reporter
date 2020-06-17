@@ -260,13 +260,27 @@ workflows:
             # npm install --debug --global windows-build-tools
 
             # choco install --force visualstudio2019community --package-parameters "--allWorkloads --includeRecommended --includeOptional --passive"
-            choco install -y vcredist2017
-            choco install -y visualcpp-build-tools
-            choco install -y vcredist-all
-            choco install -y microsoft-visual-cpp-build-tools
-            choco install -y vcbuildtools -ia "/Full"
+            # choco install -y vcredist2017
+            # choco install -y visualcpp-build-tools
+            # choco install -y vcredist-all
+            # choco install -y microsoft-visual-cpp-build-tools
+            # choco install -y vcbuildtools -ia "/Full"
 
-            choco install -y visualstudio2017buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools"
+            # choco install -y visualstudio2017buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools"
+
+            # choco install -y windows-sdk-7.1
+
+            # thanks to: https://msitko.pl/blog/2020/03/05/native-image-on-windows.html
+            choco install visualstudio2017-workload-vctools
+
+            # please kill me: https://help.appveyor.com/discussions/questions/18777-how-to-use-vcvars64bat-from-powershell
+            cmd.exe /c "call `"C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\vc\Auxiliary\Build\vcvars64.bat`" && set > %temp%\vcvars.txt"
+
+            Get-Content "$env:temp\vcvars.txt" | Foreach-Object {
+              if ($_ -match "^(.*?)=(.*)$") {
+                Set-Content "env:\$($matches[1])" $matches[2]
+              }
+            }
 
             # TODO GraalVM version should be in a single place
             Set-Item -Path Env:GRAAL_VERSION -Value "20.0.0"
