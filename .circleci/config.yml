@@ -266,6 +266,8 @@ workflows:
             choco install -y microsoft-visual-cpp-build-tools
             choco install -y vcbuildtools -ia "/Full"
 
+            choco install -y visualstudio2017buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools"
+
             # TODO GraalVM version should be in a single place
             Set-Item -Path Env:GRAAL_VERSION -Value "20.0.0"
             Set-Item -Path Env:TARGET_GRAAL -Value ("./target/graalvm-" + $Env:GRAAL_VERSION + ".tar.gz")
