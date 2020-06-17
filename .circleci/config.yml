@@ -260,6 +260,10 @@ workflows:
             # npm install --debug --global windows-build-tools
 
             # choco install --force visualstudio2019community --package-parameters "--allWorkloads --includeRecommended --includeOptional --passive"
+            choco install -y vcredist2017
+            choco install -y visualcpp-build-tools
+            choco install -y vcredist-all
+            choco install -y microsoft-visual-cpp-build-tools
             choco install -y vcbuildtools -ia "/Full"
 
             # TODO GraalVM version should be in a single place
