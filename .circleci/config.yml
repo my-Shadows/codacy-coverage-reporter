@@ -326,7 +326,7 @@ workflows:
             mkdir -p  ~/workdir/tmp-artifacts-win
             mv.exe $HOME/workdir/target/graalvm-native-image/codacy-coverage-reporter.exe $HOME/workdir/tmp-artifacts-win/codacy-coverage-reporter-win.exe
           persist_to_workspace: true
-          persist_to_workspace_path: "$HOME/workdir/tmp-artifacts-win"
+          persist_to_workspace_path: "~/workdir/tmp-artifacts-win/codacy-coverage-reporter-win.exe"
           requires:
             - test_and_coverage
       - package_artifacts:
