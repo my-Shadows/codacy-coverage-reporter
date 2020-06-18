@@ -93,13 +93,12 @@ jobs:
           at: ~/workdir
       - run: |
           ls -al ~/workdir/tmp-artifacts
-          ls -al ~/workdir/tmp-artifacts-win
           
           mkdir -p ~/workdir/artifacts/
           mv ~/workdir/tmp-artifacts/codacy-coverage-reporter-assembly-$(cat .version).jar ~/workdir/artifacts/
           upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-linux-$(cat .version) ~/workdir/tmp-artifacts/codacy-coverage-reporter-linux
           upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-darwin-$(cat .version) ~/workdir/tmp-artifacts/codacy-coverage-reporter-darwin
-          upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-win-$(cat .version).exe ~/workdir/tmp-artifacts-win/codacy-coverage-reporter-win.exe
+          upx --lzma -o ~/workdir/artifacts/codacy-coverage-reporter-win-$(cat .version).exe ~/workdir/tmp-artifacts/codacy-coverage-reporter-win.exe
       - persist_to_workspace:
           root: ~/workdir
           paths:
@@ -323,16 +322,17 @@ workflows:
             # TODO remove-me
             dir $HOME/workdir/target/graalvm-native-image
 
-            mkdir -p  ~/workdir/tmp-artifacts-win
-            mv.exe $HOME/workdir/target/graalvm-native-image/codacy-coverage-reporter.exe $HOME/workdir/tmp-artifacts-win/codacy-coverage-reporter-win.exe
+            mkdir -p  ~/workdir/tmp-artifacts
+            mv.exe $HOME/workdir/target/graalvm-native-image/codacy-coverage-reporter.exe $HOME/workdir/tmp-artifacts/codacy-coverage-reporter-win.exe
           persist_to_workspace: true
-          persist_to_workspace_path: "~/workdir/tmp-artifacts-win/codacy-coverage-reporter-win.exe"
+          persist_to_workspace_path: "tmp-artifacts/codacy-coverage-reporter-win.exe"
           requires:
             - test_and_coverage
       - package_artifacts:
           requires:
             - create_artifacts
             - create_artifacts_for_osx
+            - create_artifacts_for_win
       - it_coverage_script_macosx:
           requires:
             - package_artifacts
