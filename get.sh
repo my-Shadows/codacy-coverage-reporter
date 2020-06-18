@@ -75,6 +75,15 @@ if [ -z "$CODACY_REPORTER_VERSION" ]; then
     CODACY_REPORTER_VERSION="latest"
 fi
 
+# defining CODACY_REPORTER_JAVA_FALLBACK trigger the fallback
+if [ -z "$CODACY_REPORTER_JAVA_FALLBACK" ]; then
+    unamestr=`uname`
+    uname_machine_str=`uname -m`
+else
+    unamestr="unkown"
+    uname_machine_str="unkown"
+fi
+
 download() {
     local url="$1"
     local output="${2:--}"
@@ -132,11 +141,12 @@ codacy_reporter_jar_start_cmd() {
 }
 
 run_command=""
-unamestr=`uname`
-if [ "$unamestr" = "Linux" ]; then
+if [ "$unamestr" = "Linux" && "$uname_machine_str" == "x86_64" ]; then
     codacy_reporter_native_start_cmd "linux"
-elif [ "$unamestr" = "Darwin" ]; then
+elif [ "$unamestr" = "Darwin" && "$uname_machine_str" == "x86_64" ]; then
     codacy_reporter_native_start_cmd "darwin"
+elif [ "$unamestr" = "Windows" && "$uname_machine_str" == "x86_64" ]; then
+    codacy_reporter_native_start_cmd "win.exe"
 else
     codacy_reporter_jar_start_cmd
 fi
