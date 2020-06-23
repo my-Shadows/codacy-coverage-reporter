@@ -191,16 +191,16 @@ jobs:
       - run:
           name: prepare the environment
           command: |
-            Invoke-WebRequest "https://search.maven.org/remotecontent?filepath=org/mock-server/mockserver-netty/5.10.0/mockserver-netty-5.10.0-jar-with-dependencies.jar" -OutFile "mockserver.jar"
+          curl.exe -L "https://search.maven.org/remotecontent?filepath=org/mock-server/mockserver-netty/5.10.0/mockserver-netty-5.10.0-jar-with-dependencies.jar" -o "mockserver.jar"
             mkdir -p .codacy-coverage
-            cp $HOME/workdir/artifacts/codacy-coverage-reporter-win-$(cat $HOME/workdir/.version).exe .codacy-coverage/codacy-coverage-reporter
+            cp $HOME/workdir/artifacts/codacy-coverage-reporter-win-$(cat $HOME/workdir/.version).exe .codacy-coverage/codacy-coverage-reporter.exe
       - run:
           name: test on windows
           command: |
             echo "Start and provision the mockserver"
             Start-Job { java -jar mockserver.jar -serverPort 1080 }
 
-            cmd.exe /c timeout 60 bash -c 'while [[ "$(curl -X PUT -o /dev/null -w ''%{http_code}'' localhost:1080/mockserver/status)" != "200" ]]; do sleep 2; done' || false
+            bash wait_for_mockserver.sh
             curl -X PUT -d "$(cat integration-tests/mock-server-config.json)" http://localhost:1080/mockserver/expectation
 
             echo "Run the test"
