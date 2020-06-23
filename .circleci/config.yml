@@ -191,7 +191,7 @@ jobs:
       - run:
           name: prepare the environment
           command: |
-          curl.exe -L "https://search.maven.org/remotecontent?filepath=org/mock-server/mockserver-netty/5.10.0/mockserver-netty-5.10.0-jar-with-dependencies.jar" -o "mockserver.jar"
+            curl.exe -L "https://search.maven.org/remotecontent?filepath=org/mock-server/mockserver-netty/5.10.0/mockserver-netty-5.10.0-jar-with-dependencies.jar" -o "mockserver.jar"
             mkdir -p .codacy-coverage
             cp $HOME/workdir/artifacts/codacy-coverage-reporter-win-$(cat $HOME/workdir/.version).exe .codacy-coverage/codacy-coverage-reporter.exe
       - run:
