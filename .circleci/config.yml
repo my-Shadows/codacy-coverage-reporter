@@ -27,7 +27,7 @@ commands:
             export CODACY_PROJECT_TOKEN='TEST_CODACY_PROJECT_TOKEN'
             export TEST_CODACY_REPORT_PATH='integration-tests/test_dotcover.xml'
             set +e
-            CODACY_REPORTER_TMP_FOLDER=.codacy-coverage
+            export CODACY_REPORTER_TMP_FOLDER=".codacy-coverage"
             mkdir -p $CODACY_REPORTER_TMP_FOLDER
             cp "$HOME/workdir/artifacts/codacy-coverage-reporter-linux-$(cat $HOME/workdir/.version)" "$CODACY_REPORTER_TMP_FOLDER/codacy-coverage-reporter"
             # the following line ensure that we are using the cached binary
@@ -161,7 +161,7 @@ jobs:
           name: prepare the environment
           command: |
             brew install mockserver coreutils
-            CODACY_REPORTER_TMP_FOLDER=.codacy-coverage
+            export CODACY_REPORTER_TMP_FOLDER=".codacy-coverage"
             mkdir -p $CODACY_REPORTER_TMP_FOLDER
             cp $HOME/workdir/artifacts/codacy-coverage-reporter-darwin-$(cat $HOME/workdir/.version) $CODACY_REPORTER_TMP_FOLDER/codacy-coverage-reporter
       - run:
