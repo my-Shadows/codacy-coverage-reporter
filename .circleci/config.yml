@@ -17,10 +17,8 @@ jobs:
           export CODACY_REPORTER_VERSION=latest
           export CODACY_PROJECT_TOKEN=$CODACY_PROJECT_TOKEN
           # comma separated list of report files
-          # reference from https://stackoverflow.com/a/918931/7898052
-          IFS=',' read -a report_array \<<EOF
-          "coverage.xml"
-          EOF
+          # reference from https://unix.stackexchange.com/a/191125
+          report_array=$(echo "coverage.xml" | cut -d',' -f1)
           
           params=''
           for report in "${report_array[@]}"
