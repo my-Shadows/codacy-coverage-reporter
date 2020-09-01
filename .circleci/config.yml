@@ -13,7 +13,7 @@ jobs:
       - run: touch coverage.xml
       - run: |
           apk --no-cache add bash curl
-      - run:
+      - run: |
           export CODACY_REPORTER_VERSION=latest
           export CODACY_PROJECT_TOKEN=$CODACY_PROJECT_TOKEN
           # comma separated list of report files
