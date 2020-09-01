@@ -35,7 +35,15 @@ jobs:
             skip_option=""
           fi
 
-          wget -qO - https://coverage.codacy.com/get.sh > get.sh
+
+          if [ -x "$(which curl)" ]; then
+            curl -Ls https://coverage.codacy.com/get.sh > get.sh
+          elif [ -x "$(which wget)" ] ; then
+            wget -qO - https://coverage.codacy.com/get.sh > get.sh
+          else
+            printf "Could not find curl or wget, please install one."
+          fi
+          
           source get.sh report $params --partial $skip_option &&\
           source get.sh final $skip_option
 
