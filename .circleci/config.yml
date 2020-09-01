@@ -34,8 +34,9 @@ jobs:
             skip_option=""
           fi
 
-          wget -qO - https://coverage.codacy.com/get.sh report $params --partial $skip_option | sh
-          wget -qO - https://coverage.codacy.com/get.sh final $skip_option | sh
+          wget -qO - https://coverage.codacy.com/get.sh > get.sh
+          source get.sh report $params --partial $skip_option &&\
+          source get.sh final $skip_option
 
 workflows:
   version: 2
