@@ -11,31 +11,33 @@ jobs:
     steps:
       - checkout
       - run: touch coverage.xml
+      - run: |
+          apk --no-cache add bash curl
       - run:
-        export CODACY_REPORTER_VERSION=latest
-        export CODACY_PROJECT_TOKEN=$CODACY_PROJECT_TOKEN
-        # comma separated list of report files
-        report_list=coverage.xml
+          export CODACY_REPORTER_VERSION=latest
+          export CODACY_PROJECT_TOKEN=$CODACY_PROJECT_TOKEN
+          # comma separated list of report files
+          report_list=coverage.xml
 
-        IFS=','
-        report_array=$report_list
-        params=''
-        for report in $report_array
-        do
-            if [ ! -z "$report" ]
-            then
-                params="$params -r $report"
-            fi
-        done
+          IFS=','
+          report_array=$report_list
+          params=''
+          for report in $report_array
+          do
+              if [ ! -z "$report" ]
+              then
+                  params="$params -r $report"
+              fi
+          done
 
-        if false; then
-            skip_option="--skip"
-        else
-            skip_option=""
-        fi
+          if false; then
+              skip_option="--skip"
+          else
+              skip_option=""
+          fi
 
-        sh <(curl -Ls https://coverage.codacy.com/get.sh) report $params --partial $skip_option &&\
-        sh <(curl -Ls https://coverage.codacy.com/get.sh) final $skip_option
+          bash <(curl -Ls https://coverage.codacy.com/get.sh) report $params --partial $skip_option &&\
+          bash <(curl -Ls https://coverage.codacy.com/get.sh) final $skip_option
 
 workflows:
   version: 2
