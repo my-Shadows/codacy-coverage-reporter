@@ -6,13 +6,13 @@ orbs:
 jobs:
   example:
     docker:
-      - image: ubuntu
-        # openjdk:8-jdk-alpine
+      # - image: ubuntu
+      - image: openjdk:8-jdk-alpine
     working_directory: ~/repo
     steps:
       - checkout
       - run: touch coverage.xml
-      - run: apt-get update && apt-get install -y curl
+      # - run: apt-get update && apt-get install -y curl
       - run: |
           export CODACY_REPORTER_VERSION=latest
           export CODACY_PROJECT_TOKEN=$CODACY_PROJECT_TOKEN
