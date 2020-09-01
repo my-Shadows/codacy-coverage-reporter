@@ -17,12 +17,18 @@ jobs:
           export CODACY_REPORTER_VERSION=latest
           export CODACY_PROJECT_TOKEN=$CODACY_PROJECT_TOKEN
           # comma separated list of report files
-          report_list=coverage.xml
+          # report_list=coverage.xml
 
-          IFS=','
-          report_array=$report_list
+          # IFS=','
+          # report_array=$report_list
+          # params=''
+          # for report in $report_array
+
+          # reference from https://stackoverflow.com/a/918931/7898052
+          IFS=',' read -ra report_array \<<< "<< parameters.coverage-reports >>"
+          
           params=''
-          for report in $report_array
+          for report in "${report_array[@]}"
           do
               if [ ! -z "$report" ]
               then
