@@ -11,9 +11,34 @@ jobs:
     steps:
       - checkout
       - run: touch coverage.xml
-      - coverage-reporter/send_report:
-          coverage-reports: 'coverage.xml'
-          project-token: $CODACY_PROJECT_TOKEN
+      - run: |
+          export CODACY_REPORTER_VERSION=latest
+          export CODACY_PROJECT_TOKEN=$CODACY_PROJECT_TOKEN
+          # comma separated list of report files
+          # reference from https://stackoverflow.com/a/918931/7898052
+          IFS=',' read -ra report_array \<<< "coverage.xml"
+          params=''
+
+          for report in "${report_array[@]}"
+          do
+              if [ ! -z "$report" ]
+              then
+                  params="$params -r $report"
+              fi
+          done
+
+          if false; then
+              skip_option="--skip"
+          else
+              skip_option=""
+          fi
+
+          bash <(curl -Ls https://coverage.codacy.com/get.sh) report $params --partial $skip_option &&\
+          bash <(curl -Ls https://coverage.codacy.com/get.sh) final $skip_option
+
+      # - coverage-reporter/send_report:
+      #     coverage-reports: 'coverage.xml'
+      #     project-token: $CODACY_PROJECT_TOKEN
 
 workflows:
   version: 2
