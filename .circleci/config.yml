@@ -18,7 +18,8 @@ jobs:
           export CODACY_PROJECT_TOKEN=$CODACY_PROJECT_TOKEN
           # comma separated list of report files
           # reference from https://unix.stackexchange.com/a/191125
-          report_array=$(echo "coverage.xml" | cut -d',' -f1)
+          # plus https://stackoverflow.com/a/20323801/7898052
+          report_array=$(printf "coverage.xml" | cut -d',' -f1)
           
           params=''
           for report in "${report_array[@]}"
