@@ -18,7 +18,7 @@ jobs:
           export CODACY_PROJECT_TOKEN=$CODACY_PROJECT_TOKEN
           # comma separated list of report files
           # reference from https://stackoverflow.com/a/918931/7898052
-          IFS=',' read -ra report_array \<<EOF
+          IFS=',' read -a report_array \<<EOF
           "coverage.xml"
           EOF
           
