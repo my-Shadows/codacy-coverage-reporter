@@ -6,7 +6,7 @@ orbs:
 jobs:
   example:
     docker:
-      image: openjdk:8-jdk-alpine
+      - image: openjdk:8-jdk-alpine
     working_directory: ~/repo
     steps:
       - checkout
