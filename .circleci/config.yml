@@ -12,17 +12,15 @@ jobs:
       - checkout
       - run: touch coverage.xml
       - run: |
-          apk --no-cache add bash curl
-      - run: |
           export CODACY_REPORTER_VERSION=latest
           export CODACY_PROJECT_TOKEN=$CODACY_PROJECT_TOKEN
           # comma separated list of report files
           # reference from https://unix.stackexchange.com/a/191125
           # plus https://stackoverflow.com/a/20323801/7898052
           report_array=$(printf "coverage.xml" | cut -d',' -f1)
-          
+
           params=''
-          for report in "${report_array[@]}"
+          for report in $report_array
           do
               if [ ! -z "$report" ]
               then
@@ -31,13 +29,13 @@ jobs:
           done
 
           if false; then
-              skip_option="--skip"
+            skip_option="--skip"
           else
-              skip_option=""
+            skip_option=""
           fi
 
-          bash <(curl -Ls https://coverage.codacy.com/get.sh) report $params --partial $skip_option &&\
-          bash <(curl -Ls https://coverage.codacy.com/get.sh) final $skip_option
+          wget -qO - https://coverage.codacy.com/get.sh report $params --partial $skip_option | sh
+          wget -qO - https://coverage.codacy.com/get.sh final $skip_option | sh
 
 workflows:
   version: 2
